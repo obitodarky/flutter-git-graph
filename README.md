@@ -9,67 +9,87 @@ A Flutter application that visualizes data in a GitHub-style contribution graph 
 - Mock data generation for testing and demonstration
 - Responsive design that works across different screen sizes
 
-## Getting Started
+# Development Environment
+- **OS and version**: macOS Sequoia Version 15.1
+- **IDE**: Android Studio Koala
+- **Flutter SDK**: 3.24.4
 
-### Prerequisites
+## Supported Platforms
+- Android
+- iOS
 
-- Flutter SDK (^3.5.4)
-- Dart SDK (latest stable)
-- iOS/Android development environment setup
+## Installation
+To set up the project, follow these steps:
 
-### Installation
+1. **Install FVM (Flutter Version Management)**: 
+The following steps for installation are with FVM. You can also avoid using FVM as long as you have Flutter SDK version 3.24.4 installed
+Follow the official installation guide: [FVM Installation Guide](https://fvm.app/docs/getting_started/installation).
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd flutter_git_graph
+
+2. **Clone the repository**:
+   ```bash
+   git clone https://github.com/your-repo/your-project.git
+   cd your-project
+   ```
+3. **Install the specified Flutter SDK version**:
+   ```bash
+   fvm install 3.24.4
+   fvm use 3.24.4
+   fvm flutter doctor -v
+   ```
+
+4. **Run the project**:
+   ```bash
+   fvm flutter pub get
+   fvm flutter run
+   ```
+
+## System Architecture
+The file structure is organized as follows:
+
+```
+lib
+ ├── features
+ │   ├── home
+ │   │   ├── data
+ │   │   ├── provider
+ │   │   ├── ui
+ │   ├── heatmap
+ │   │   ├── data
+ │   │   ├── provider
+ │   │   ├── ui
+ ├── utils
+ ├── constants
+ ├── main.dart
 ```
 
-2. Install dependencies:
-```bash
-flutter pub get
-```
+### main.dart
+This is the main entry point of the app. It initializes the application and calls `HomeScreen`.
 
-3. Run the app:
-```bash
-flutter run
-```
+### lib/features
+All features are organized within the `/features` directory. Since we only have one feature(heatmap widget). there is no need to strictly breakdown each feature into data,provider,controller,repository, etc layers.
 
-## Project Structure
+#### data
+This layer contains data models and any data-fetching logic. For example, the `DayData` model and methods to transform data for the heatmap visualization. If there are network calls, they should be handled here, ideally through a repository pattern that abstracts the data source.
 
-```
-lib/
-├── data/               # Data models and mock data generation
-├── features/           # Feature-specific screens and view models
-├── heatmap/           # Heatmap widget implementation
-├── utils/             # Utility classes and helpers
-└── main.dart          # Application entry point
-```
+#### provider
+The provider layer contains the business logic that updates the UI layer. For instance, the `HomeScreenViewModel` manages the loading state and data fetching for the home screen. It uses `ValueNotifier` to notify the UI of changes, ensuring that the UI reacts to data updates seamlessly.
 
-## Testing
+#### ui
+The UI layer contains the screens and widgets for each feature. For example, the `HomeScreen` displays the heatmap and handles user interactions. The UI should be broken down into smaller, reusable widgets for better readability and maintainability.
 
-Run the tests using:
-```bash
-flutter test
-```
+### utils
+The `utils` directory contains utility functions and classes that can be reused across the application. This includes helper functions for formatting, data manipulation, and other common tasks.
 
-The project includes widget tests that verify basic functionality. See the test directory for examples.
+### color_utils
+The `color_utils` file defines color constants and utility functions for managing colors throughout the app. This ensures a consistent color scheme and makes it easy to update colors in one place.
 
-## Design Decisions
+### app_constants
+The `app_constants` file contains constant values used throughout the application, such as API endpoints, default values, and configuration settings. This helps avoid magic numbers and strings in the code, making it more maintainable.
 
-### Architecture
-- Used a ViewModel pattern for state management
-- Separated concerns between data, UI, and business logic
-- Implemented value notifiers for reactive updates
+## Using the App
+Once the app is launched, the home screen will display a heatmap visualization based on the fetched data. Users can interact with the heatmap to view transaction details through tooltips. The app will show a loading spinner while data is being fetched, providing a smooth user experience.
 
-### UI/UX Considerations
-- Consistent color scheme using ColorUtil
-- Reusable text styles defined in AppTextStyles
-- Responsive tooltip design that adapts to screen size
-- Accessibility-friendly color contrasts
-
-### Data Management
-- Mock data generation for development and testing
-- Flexible data structure that can be easily replaced with real API data
-- Efficient data transformation for heatmap visualization
-
+### User Interaction
+- **Heatmap Interaction**: Users can tap on the heatmap cells to view detailed transaction information in a tooltip.
+- **Data Refresh**: A floating action button allows users to refresh the data, triggering a new fetch and updating the heatmap accordingly.
