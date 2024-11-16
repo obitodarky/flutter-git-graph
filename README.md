@@ -44,23 +44,39 @@ Follow the official installation guide: [FVM Installation Guide](https://fvm.app
    fvm flutter run
    ```
 
-## System Architecture
+## Using the App
+Once the app is launched, the home screen will display a heatmap visualization based on the fetched data. Users can interact with the heatmap to view transaction details through tooltips. The app will show a loading spinner while data is being fetched, providing a smooth user experience.
+
+
+## File Structure and Architecure
 The file structure is organized as follows:
 
 ```
-lib
- ├── features
- │   ├── home
- │   │   ├── data
- │   │   ├── provider
- │   │   ├── ui
- │   ├── heatmap
- │   │   ├── data
- │   │   ├── provider
- │   │   ├── ui
- ├── utils
- ├── constants
- ├── main.dart
+lib/
+├── app_state/
+│   ├── app_state_provider.dart
+├── data/
+│   ├── data_classes.dart
+│   ├── data_export.dart
+│   ├── mock_data.dart
+├── features/
+│   └── home/
+│       ├── home_screen.dart
+│       ├── home_vm.dart
+├── heatmap/
+│   ├── ui/
+│   │   ├── widgets/
+│   │   │   ├── custom_graph.dart
+│   │   │   ├── heatmap_options.dart
+│   │   │   ├── heatmap.dart
+│   │   ├── view_model.dart
+│   ├── heatmap_exports.dart
+├── utils/
+│   ├── color/
+│   ├── text_style_util.dart
+│   ├── app_constants.dart
+│   ├── utils_export.dart
+└── main.dart
 ```
 
 ### main.dart
@@ -87,9 +103,23 @@ The `color_utils` file defines color constants and utility functions for managin
 ### app_constants
 The `app_constants` file contains constant values used throughout the application, such as API endpoints, default values, and configuration settings. This helps avoid magic numbers and strings in the code, making it more maintainable.
 
-## Using the App
-Once the app is launched, the home screen will display a heatmap visualization based on the fetched data. Users can interact with the heatmap to view transaction details through tooltips. The app will show a loading spinner while data is being fetched, providing a smooth user experience.
 
+## Improvements and Possible Changes
 ### User Interaction
 - **Heatmap Interaction**: Users can tap on the heatmap cells to view detailed transaction information in a tooltip.
 - **Data Refresh**: A floating action button allows users to refresh the data, triggering a new fetch and updating the heatmap accordingly.
+
+1. **Error Handling**: 
+   - Implement comprehensive error handling and assertions for data, UI, etc. This includes handling index out of range errors, null values, and edge cases. The code should be tested for all types of data to ensure robustness.
+
+2. **Mock Data**: 
+   - Enhance the mock data to include more realistic scenarios for testing. This will help identify potential loopholes and ensure the app can handle various data structures without requiring significant UI changes.
+
+3. **Better Documentation**: 
+   - Improve documentation beyond the `README.md`. Each widget and class should have clear comments and explanations to facilitate understanding and maintenance.
+
+4. **Code Quality**: 
+   - Refactor the code to improve readability and efficiency. Breaking down larger widgets into smaller, more manageable components will enhance maintainability and clarity of business logic.
+
+5. **Better Tooltip Implementation**: 
+   - Address the tooltip overflow issue when viewing transactions at the end of the heatmap. Implement better logic to ensure tooltips do not overflow and maintain a good UI/UX experience.
