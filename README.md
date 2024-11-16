@@ -1,6 +1,3 @@
-I'll help you create a comprehensive README.md file for this Flutter Git Graph project. Based on the codebase, I'll document the setup, running instructions, and design decisions.
-
-```markdown:README.md
 # Flutter Git Graph
 
 A Flutter application that visualizes data in a GitHub-style contribution graph (heatmap).
