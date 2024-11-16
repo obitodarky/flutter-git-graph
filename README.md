@@ -47,6 +47,10 @@ Follow the official installation guide: [FVM Installation Guide](https://fvm.app
 ## Using the App
 Once the app is launched, the home screen will display a heatmap visualization based on the fetched data. Users can interact with the heatmap to view transaction details through tooltips. The app will show a loading spinner while data is being fetched, providing a smooth user experience.
 
+### User Interaction
+- **Heatmap Interaction**: Users can tap on the heatmap cells to view detailed transaction information in a tooltip.
+- **Data Refresh**: A floating action button allows users to refresh the data, triggering a new fetch and updating the heatmap accordingly.
+
 
 ## File Structure and Architecure
 The file structure is organized as follows:
@@ -105,9 +109,6 @@ The `app_constants` file contains constant values used throughout the applicatio
 
 
 ## Improvements and Possible Changes
-### User Interaction
-- **Heatmap Interaction**: Users can tap on the heatmap cells to view detailed transaction information in a tooltip.
-- **Data Refresh**: A floating action button allows users to refresh the data, triggering a new fetch and updating the heatmap accordingly.
 
 1. **Error Handling**: 
    - Implement comprehensive error handling and assertions for data, UI, etc. This includes handling index out of range errors, null values, and edge cases. The code should be tested for all types of data to ensure robustness.
