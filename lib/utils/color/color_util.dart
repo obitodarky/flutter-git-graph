@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
 
 class ColorUtil {
+  static const Color primaryColor = Color(0xFF6200EE);
+  static const Color secondaryColor = Color(0xFF03DAC6);
 
-  static Color getColor(double value, Color minColor, Color maxColor) {
-    // Ensure value stays within the 0.0 to 1.0 range
-    value = value.clamp(0.0, 1.0);
+  static const Color colorWhite = Color(0xFFFFFFFF);
+  static const Color colorGrey = Color(0xFF858585);
 
-    // Interpolate red, green, and blue values between minColor and maxColor
-    int red = (minColor.red + (maxColor.red - minColor.red) * value).toInt();
-    int green = (minColor.green + (maxColor.green - minColor.green) * value).toInt();
-    int blue = (minColor.blue + (maxColor.blue - minColor.blue) * value).toInt();
+  static const Color backgroundColor = Color(0xFFF5F5F5);
+  static const Color textColorPrimary = Color(0xFF000000);
+  static const Color textColorSecondary = Color(0xFF757575);
+  static const Color textColorTertiary = Color(0xFFFFFFFF);
+  static const Color textColorAccent = Color(0xFF6200EE);
 
-    // Return the resulting interpolated color
-    return Color.fromARGB(255, red, green, blue);
-  }
+  static const Color tooltipBackgroundColor = Color(0xFFFFFFFF);
+  static const Color tooltipShadowColor = Color(0x40000000);
+
+  static const Color colorCreditGreen = Color(0xFF4CAF50);
+  static const Color colorDebitRed = Color(0xFFF44336);
+
+  static const Color borderColor = Color(0xFFDDDDDD);
+
+  static const List<Color> heatmapColors = [
+    Color(0xFF858585), // Empty Cell
+    Color(0xFFE8BBFF), // Very Light Purple
+    Color(0xFFBB80FF), // Soft Lavender
+    Color(0xFF8C33FF), // Saturated Purple
+    Color(0xFF6200EE), // Max Filled Cell (Primary Purple)
+  ];
 }
