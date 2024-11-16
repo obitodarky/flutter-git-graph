@@ -18,10 +18,9 @@ class HeatmapViewModel<T> extends ChangeNotifier {
     }
     
     if (cellData != null) {
-      final adjustedOffset = Offset(
-        tapOffset.dx + scrollOffset,
-        tapOffset.dy,
-      );
+      final visibleX = tapOffset.dx - scrollOffset;
+      final adjustedOffset = Offset(visibleX, tapOffset.dy);
+      
       _onTapWidgetOffset.value = adjustedOffset;
       _selectedCellData.value = cellData;
       notifyListeners();

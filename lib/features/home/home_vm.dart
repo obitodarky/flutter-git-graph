@@ -3,6 +3,14 @@ import 'package:flutter_git_graph/data/data_export.dart';
 import 'package:flutter_git_graph/utils/utils_export.dart';
 
 class HomeScreenViewModel extends ChangeNotifier {
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  HomeScreenViewModel(){
+    fetchYearData();
+  }
+
   final ValueNotifier<List<DayData>> _currentData = ValueNotifier([]);
   ValueNotifier<List<DayData>> get currentData => _currentData;
 
@@ -13,10 +21,12 @@ class HomeScreenViewModel extends ChangeNotifier {
   ValueNotifier<List<String>> get monthLabels => _monthLabels;
 
   void fetchYearData() {
+    _isLoading = true;
     final data = MockData.generateYearMockData();
     _currentData.value = data;
     _currentHeatmapData.value = DayData.transformToHeatmap(data);
     _updateMonthLabels(data);
+    _isLoading = false;
     notifyListeners();
   }
 

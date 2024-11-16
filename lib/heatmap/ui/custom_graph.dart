@@ -14,43 +14,39 @@ class HeatmapPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()..style = PaintingStyle.fill;
-
-    // Calculate visible columns based on size
     final double cellSizeWithPadding = options.cellSize + options.cellPadding;
-    final int visibleColumns = (size.width / cellSizeWithPadding).ceil();
-    
-    // Ensure we don't exceed maxColumns
-    final int columnsToRender = visibleColumns.clamp(0, options.maxColumns);
 
-    // Loop through the grid and paint cells
-    for (int row = 0; row < options.maxRows; row++) {
-      for (int col = 0; col < columnsToRender; col++) {
+    // Paint cells column by column (column-major order)
+    for (int col = 0; col < options.maxColumns; col++) {
+      for (int row = 0; row < options.maxRows; row++) {
         final num? cellData = _getCellData(row, col);
-        paint.color = _getCellColor(cellData);
-
-        final Rect rect = _getCellRect(row, col);
-        // Only draw if the rect is within the canvas bounds
-        if (rect.left < size.width && rect.right > 0 &&
-            rect.top < size.height && rect.bottom > 0) {
-          final RRect rRect = RRect.fromRectAndRadius(rect, options.cellRadius);
-          canvas.drawRRect(rRect, paint);
+        
+        // Only draw cells that have data (not null)
+        if (cellData != null) {
+          paint.color = _getCellColor(cellData);
+          final Rect rect = _getCellRect(row, col, cellSizeWithPadding);
+          
+          if (rect.left < size.width && rect.right > 0 &&
+              rect.top < size.height && rect.bottom > 0) {
+            final RRect rRect = RRect.fromRectAndRadius(rect, options.cellRadius);
+            canvas.drawRRect(rRect, paint);
+          }
         }
       }
     }
   }
 
-  /// Get the data for a specific cell, calculate the index in the 1D list
+  /// Get the data for a specific cell using column-major order
   num? _getCellData(int row, int col) {
-    //Column major vs Row Major?
     final int index = col * options.maxRows + row;
     if (index < 0 || index >= data.length) return null;
     return data[index];
   }
 
   /// Calculate the color for a cell based on its value
-  Color _getCellColor(num? cellData) {
-    if (cellData == null) {
-      return options.emptyStateColor;
+  Color _getCellColor(num cellData) {
+    if (cellData == 0) {
+      return options.emptyStateColor; // Empty state color for zero values
     }
     return _mapValueToColor(cellData.toDouble());
   }
@@ -89,9 +85,9 @@ class HeatmapPainter extends CustomPainter {
   }
 
   /// Calculate the rect for a cell based on its row and column
-  Rect _getCellRect(int row, int col) {
-    final double left = col * (options.cellSize + options.cellPadding);
-    final double top = row * (options.cellSize + options.cellPadding);
+  Rect _getCellRect(int row, int col, double cellSizeWithPadding) {
+    final double left = col * cellSizeWithPadding;
+    final double top = row * cellSizeWithPadding;
     return Rect.fromLTWH(left, top, options.cellSize, options.cellSize);
   }
 

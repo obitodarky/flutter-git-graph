@@ -57,6 +57,50 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
     );
   }
 
+  DayData? _getCellDataAtOffset(Offset? offset, {bool forTooltip = false}) {
+    if (offset == null) return null;
+
+    final double cellSizeWithPadding =
+        widget.options.cellSize + widget.options.cellPadding;
+
+    // For tooltip, use screen position. For cell detection, use scrolled position
+    double effectiveX;
+    if (forTooltip) {
+      // For tooltip, add scroll offset back to get original position
+      effectiveX = offset.dx + _scrollController.offset;
+    } else {
+      // For cell detection, use the raw position
+      effectiveX = offset.dx;
+    }
+
+    // Remove padding and calculate indices
+    final adjustedX = effectiveX - widget.options.graphPadding.left;
+    final adjustedY = offset.dy - widget.options.graphPadding.top;
+
+    // Calculate cell indices
+    final int col = (adjustedX / cellSizeWithPadding).floor();
+    final int row = (adjustedY / cellSizeWithPadding).floor();
+
+    // Validate bounds
+    if (row < 0 ||
+        row >= widget.options.maxRows ||
+        col < 0 ||
+        col >= widget.options.maxColumns) {
+      //TODO: handle exception
+      return null;
+    }
+
+    // Calculate index using column-major order
+    final int index = col * widget.options.maxRows + row;
+    
+    // Only return data if the index exists and has non-null data
+    if (index < widget.data.length) {
+      return widget.data[index];
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final double cellSizeWithPadding = 
@@ -120,13 +164,23 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
                     builder: (context, offset, child) {
                       return GestureDetector(
                         onTapUp: (details) {
-                          final cellData =
-                              _getCellDataAtOffset(details.localPosition);
-                          _viewModel.setSelectedCell(
-                            details.localPosition,
-                            cellData: cellData,
-                            scrollOffset: _scrollController.offset,
-                          );
+                          final RenderBox box = context.findRenderObject() as RenderBox;
+                          final localPosition = box.globalToLocal(details.globalPosition);
+
+                          // Get cell data using the local position
+                          final cellData = _getCellDataAtOffset(localPosition);
+                          
+                          if (cellData != null) {
+                            // For tooltip, use screen position
+                            final screenX = localPosition.dx;
+                            final tooltipOffset = Offset(screenX, localPosition.dy);
+                            
+                            _viewModel.setSelectedCell(
+                              tooltipOffset,
+                              cellData: cellData,
+                              scrollOffset: _scrollController.offset,
+                            );
+                          }
                         },
                         child: heatmap,
                       );
@@ -143,7 +197,7 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
             ],
           ),
         ),
-        // Tooltip overlay if tapped
+        // Tooltip overlay
         ValueListenableBuilder<Offset?>(
           valueListenable: _viewModel.onTapWidgetOffset,
           builder: (context, offset, child) {
@@ -154,60 +208,12 @@ class _HeatmapWidgetState extends State<HeatmapWidget> {
               left: offset.dx + widget.options.graphPadding.left,
               top: offset.dy + widget.options.graphPadding.top,
               child: widget.tooltipBuilder!(
-                _getCellDataAtOffset(offset),
+                _getCellDataAtOffset(offset, forTooltip: true),
               ),
             );
           },
         ),
       ],
     );
-  }
-
-  DayData? _getCellDataAtOffset(Offset? offset) {
-    if (offset == null) return null;
-
-    // Calculate cell size including padding
-    final double cellSizeWithPadding =
-        widget.options.cellSize + widget.options.cellPadding;
-
-    // Adjust the offset for scrolling and padding
-    final double scrollOffset = _scrollController.offset;
-    final double adjustedX =
-        offset.dx + scrollOffset - widget.options.graphPadding.left;
-    final double adjustedY = offset.dy - widget.options.graphPadding.top;
-
-    // Step 4: Calculate row and column indices
-    final int col = (adjustedX / cellSizeWithPadding).floor();
-    final int row = (adjustedY / cellSizeWithPadding).floor();
-
-    // // Debug prints
-    print('Tap offset: $offset');
-    print('Scroll offset: $scrollOffset');
-    print('Adjusted coordinates: ($adjustedX, $adjustedY)');
-    print('Cell indices: row=$row, col=$col');
-
-    // Validate if tap is within cell bounds (not in padding)
-    final double cellX = adjustedX - (col * cellSizeWithPadding);
-    final double cellY = adjustedY - (row * cellSizeWithPadding);
-
-    if (cellX > widget.options.cellSize || cellY > widget.options.cellSize) {
-      return null;
-    }
-
-    // Validate row and column bounds
-    if (row < 0 ||
-        row >= widget.options.maxRows ||
-        col < 0 ||
-        col >= widget.options.maxColumns) {
-      return null;
-    }
-
-    // Calculate the index using column-major order
-    final int index = col * widget.options.maxRows + row;
-    if (index >= widget.data.length) {
-      return null;
-    }
-
-    return widget.data[index];
   }
 }

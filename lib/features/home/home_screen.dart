@@ -41,6 +41,10 @@ class _HomeScreenState extends State<HomeScreen> {
             return ValueListenableBuilder(
               valueListenable: _homeScreenVM.monthLabels,
               builder: (ctx, monthLabels, child) {
+                if (_homeScreenVM.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: HeatmapWidget(
