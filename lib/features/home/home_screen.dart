@@ -51,8 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     options: const HeatmapOptions(
                       maxColumns: 54,
                       maxRows: 7,
-                      maxValueForFullColor: 5,
-                      minValueForEmptyState: 0,
                     ),
                     data: data,
                     xLabels: monthLabels,
@@ -71,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {
           _homeScreenVM.fetchYearData();
         },
-        child: const Icon(Icons.calendar_today),
+        child: const Icon(Icons.refresh),
       ),
     );
   }

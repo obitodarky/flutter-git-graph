@@ -22,7 +22,7 @@ class ColorUtil {
   static const Color borderColor = Color(0xFFDDDDDD);
 
   static const List<Color> heatmapColors = [
-    Color(0xFF858585), // Empty Cell
+    Color(0xFFE0E0E0), // Very Light Gray
     Color(0xFFE8BBFF), // Very Light Purple
     Color(0xFFBB80FF), // Soft Lavender
     Color(0xFF8C33FF), // Saturated Purple

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_git_graph/heatmap/ui/heatmap_options.dart';
 
@@ -8,27 +9,39 @@ class HeatmapPainter extends CustomPainter {
   HeatmapPainter({
     required this.data,
     required this.options,
-  
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()..style = PaintingStyle.fill;
     final double cellSizeWithPadding = options.cellSize + options.cellPadding;
+    //TODO: need to make sure empty list/null case is being handled
+    final minValue = data.cast<num>().reduce(min);
+    final maxValue = data.cast<num>().reduce(max);
+
 
     // Paint cells column by column (column-major order)
     for (int col = 0; col < options.maxColumns; col++) {
       for (int row = 0; row < options.maxRows; row++) {
-        final num? cellData = _getCellData(row, col);
-        
+        final double? cellData = _getCellData(row, col);
+
+
         // Only draw cells that have data (not null)
         if (cellData != null) {
-          paint.color = _getCellColor(cellData);
+          paint.color = _getCellColor(
+            cellData: cellData,
+            minValue: minValue,
+            maxValue: maxValue,
+            gradientColors: options.gradientColors,
+          );
           final Rect rect = _getCellRect(row, col, cellSizeWithPadding);
-          
-          if (rect.left < size.width && rect.right > 0 &&
-              rect.top < size.height && rect.bottom > 0) {
-            final RRect rRect = RRect.fromRectAndRadius(rect, options.cellRadius);
+
+          if (rect.left < size.width &&
+              rect.right > 0 &&
+              rect.top < size.height &&
+              rect.bottom > 0) {
+            final RRect rRect =
+                RRect.fromRectAndRadius(rect, options.cellRadius);
             canvas.drawRRect(rRect, paint);
           }
         }
@@ -37,51 +50,48 @@ class HeatmapPainter extends CustomPainter {
   }
 
   /// Get the data for a specific cell using column-major order
-  num? _getCellData(int row, int col) {
+  double? _getCellData(int row, int col) {
     final int index = col * options.maxRows + row;
     if (index < 0 || index >= data.length) return null;
     return data[index];
   }
 
-  /// Calculate the color for a cell based on its value
-  Color _getCellColor(num cellData) {
-    if (cellData == 0) {
-      return options.emptyStateColor; // Empty state color for zero values
-    }
-    return _mapValueToColor(cellData.toDouble());
+  /// Calculate the color for a cell based on its value and dynamic maxValue
+  Color _getCellColor(
+      {required double cellData,
+      required num minValue,
+      required num maxValue,
+      required List<Color> gradientColors}) {
+    // Normalize the cellData to a range of [0, 1]
+    final double normalizedValue =
+        ((cellData - minValue) / (maxValue - minValue)).clamp(0.0, 1.0);
+
+    // Interpolate the color from the gradient using HSV
+    return _interpolateColorHSV(normalizedValue, gradientColors);
   }
 
-  /// Map a value to the corresponding color in the gradient
-  Color _mapValueToColor(double value) {
-    // Get the number of color levels from gradientColors
-    final int levels = options.gradientColors.length;
-    
-    // Calculate the range between min and max values
-    final double valueRange = options.maxValueForFullColor - options.minValueForEmptyState;
-    
-    // Calculate the size of each level
-    final double levelSize = valueRange / (levels - 1);
+  /// Interpolate a color based on a normalized value using HSV
+  Color _interpolateColorHSV(
+      double normalizedValue, List<Color> gradientColors) {
+    final int numberOfColors = gradientColors.length;
+    final double scaledValue = normalizedValue * (numberOfColors - 1);
+    final int lowerIndex = scaledValue.floor();
+    final int upperIndex = scaledValue.ceil();
 
-    // If value is at or below minimum, return first color
-    if (value <= options.minValueForEmptyState) {
-      return options.gradientColors.first;
-    }
-    
-    // If value is at or above maximum, return last color
-    if (value >= options.maxValueForFullColor) {
-      return options.gradientColors.last;
+    if (lowerIndex == upperIndex) {
+      return gradientColors[lowerIndex];
     }
 
-    // Calculate how far above minimum the value is
-    final double valueAboveMin = value - options.minValueForEmptyState;
-    
-    // Calculate which level this value falls into
-    final int levelIndex = (valueAboveMin / levelSize).floor();
-    
-    // Ensure we don't exceed array bounds
-    final int safeIndex = levelIndex.clamp(0, levels - 1);
-    
-    return options.gradientColors[safeIndex];
+    // Convert colors to HSV
+    final HSVColor lowerColor = HSVColor.fromColor(gradientColors[lowerIndex]);
+    final HSVColor upperColor = HSVColor.fromColor(gradientColors[upperIndex]);
+
+    // Interpolate in the HSV space
+    final double t = scaledValue - lowerIndex;
+    final HSVColor interpolatedColor =
+        HSVColor.lerp(lowerColor, upperColor, t)!;
+
+    return interpolatedColor.toColor();
   }
 
   /// Calculate the rect for a cell based on its row and column

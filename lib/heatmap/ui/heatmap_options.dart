@@ -28,9 +28,6 @@ class HeatmapOptions {
   final Color emptyStateColor; // Color for empty cells
   final Color filledStateColor; // Color for filled cells
 
-  final double maxValueForFullColor;
-  final double minValueForEmptyState;
-
   final List<Color> gradientColors;
 
   final int maxRows; // Max rows can be specified by the user
@@ -45,9 +42,7 @@ class HeatmapOptions {
     this.cellRadius = const Radius.circular(2),
     required this.maxColumns,
     this.emptyStateColor = ColorUtil.colorGrey,
-    this.maxValueForFullColor = 1,
     this.gradientColors =  ColorUtil.heatmapColors,
-    this.minValueForEmptyState = 0,
     this.filledStateColor = ColorUtil.primaryColor,
     this.graphPadding = const EdgeInsets.all(8.0),
     this.cellPadding = 2.0,
