@@ -9,9 +9,10 @@ A Flutter application that visualizes data in a GitHub-style contribution graph 
 - Mock data generation for testing and demonstration
 - Responsive design that works across different screen sizes
 
-![Screenshot 2024-11-16 at 2 01 30 PM](https://github.com/user-attachments/assets/91e7f4d1-d5d0-4df5-a473-7d427d1673c3)
-![Screenshot 2024-11-16 at 2 00 51 PM](https://github.com/user-attachments/assets/2b00ee66-3da5-4afe-87ce-518b996507af)
-![Screenshot 2024-11-16 at 2 02 14 PM](https://github.com/user-attachments/assets/1e831779-9127-4143-ba58-5014a5b6cd87)
+![Screenshot 2025-01-02 at 11 48 36 AM](https://github.com/user-attachments/assets/741632b0-0a54-431a-b682-3fc7522f709f)
+![Screenshot 2025-01-02 at 11 47 14 AM](https://github.com/user-attachments/assets/789de365-c1c9-4f1f-8d0e-bea3b014c5a6)
+![Screenshot 2025-01-02 at 11 49 10 AM](https://github.com/user-attachments/assets/b5a80630-44fe-4204-922a-dedc7c15b39a)
+
 
 
 ## Screenshots
